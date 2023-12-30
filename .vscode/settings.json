@@ -1,0 +1,27 @@
+{
+    // These settings tweaks to the cmake plugin will ensure
+    // that you debug using cortex-debug instead of trying to launch
+    // a Pico binary on the host
+    "cmake.buildBeforeRun": true,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cmake.generator": "Unix Makefiles",
+    "cSpell.words": [
+        "CALIB",
+        "critsec",
+        "datasheet",
+        "DESEL",
+        "gpio",
+        "hndlr",
+        "netif",
+        "picoprobe",
+        "rssi",
+        "strerr",
+        "VCOM"
+    ],
+    "files.associations": {
+        "*.arb": "json",
+        "bme280.h": "c",
+        "ntp.h": "c",
+        "http.h": "c"
+    }
+}
