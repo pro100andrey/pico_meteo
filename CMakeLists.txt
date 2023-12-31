@@ -3,13 +3,15 @@ cmake_minimum_required(VERSION 3.12)
 # Pull in SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(server C CXX ASM)
+project(pico-meteo C CXX ASM)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")
 set(PICO_BOARD pico_w)
-set(WIFI_SSID "ssid")
-set(WIFI_PASSWORD "password")
+set(HOSTNAME "pico-meteo")
+set(WIFI_SSID "...")
+set(WIFI_PASSWORD "...")
 
 if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
     message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.5.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
@@ -52,6 +54,8 @@ set(INCLUDES
 set(WWWSRCS
 	${CMAKE_CURRENT_LIST_DIR}/www/index.html
 	${CMAKE_CURRENT_LIST_DIR}/www/img/favicon.png
+	${CMAKE_CURRENT_LIST_DIR}/www/style.css
+	${CMAKE_CURRENT_LIST_DIR}/www/main.js
 )
 
 set(LIBS
@@ -65,29 +69,29 @@ set(LIBS
     bme280
 )
 
-add_executable(main ${SRCS})
+add_executable(pico-meteo ${SRCS})
 
 # PICOW_HTTPS indicates TLS support (used for binary info).
-target_compile_definitions(main PRIVATE
+target_compile_definitions(pico-meteo PRIVATE
 	WIFI_SSID=\"${WIFI_SSID}\"
 	WIFI_PASSWORD=\"${WIFI_PASSWORD}\"
 	PICOW_HTTPS=0
 )
 
-target_include_directories(main PRIVATE ${INCLUDES})
+target_include_directories(pico-meteo PRIVATE ${INCLUDES})
 
-target_link_libraries(main
+target_link_libraries(pico-meteo
     picow_http
 	pico_cyw43_arch_lwip_poll
     ${LIBS}
 )
 
-picow_http_gen_handlers(main
+picow_http_gen_handlers(pico-meteo
 	${CMAKE_CURRENT_SOURCE_DIR}/www/www.yaml
 	${CMAKE_CURRENT_SOURCE_DIR}/www
 	${WWWSRCS}
 )
 
-pico_enable_stdio_usb(main 1)
-pico_enable_stdio_uart(main 1)
-pico_add_extra_outputs(main)
+pico_enable_stdio_usb(pico-meteo 1)
+pico_enable_stdio_uart(pico-meteo 1)
+pico_add_extra_outputs(pico-meteo)

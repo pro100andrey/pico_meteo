@@ -30,7 +30,7 @@ static volatile bool linkup = false;
 /* The most recent rssi value for our access point */
 static volatile int32_t rssi = INT32_MAX;
 /* Struct for network information, passed to the /netinfo handler */
-static struct netinfo netinfo;
+static netinfo_t netinfo;
 
 /* Critical sections to protect access to shared data */
 static critical_section_t temp_critsec, rssi_critsec, linkup_critsec;
@@ -38,15 +38,7 @@ static critical_section_t temp_critsec, rssi_critsec, linkup_critsec;
 /* repeating_timer object for rssi updates */
 static repeating_timer_t rssi_timer;
 
-#if PICO_CYW43_ARCH_POLL
-/*
- * In poll mode, rssi updates must be called from the main loop. So the
- * repeating timer is only used to pace the updates. The timer sets this
- * boolean to true, and the main loop resets it to false after getting the
- * update.
- */
 static volatile bool rssi_ready = false;
-#endif
 
 /*
  * See the comment in handler.h
@@ -55,7 +47,6 @@ int32_t
 get_rssi(void)
 {
     int32_t val;
-
     critical_section_enter_blocking(&rssi_critsec);
     val = rssi;
     critical_section_exit(&rssi_critsec);
@@ -81,22 +72,14 @@ __time_critical_func(rssi_update)(repeating_timer_t *rt)
     return true;
 }
 
-#if PICO_CYW43_ARCH_POLL
-/*
- * Callback for the repeating_timer in poll mode. Just sets the boolean to
- * indicate that the timeout has expired.
- */
-static bool
-__time_critical_func(rssi_poll)(repeating_timer_t *rt)
+static bool __time_critical_func(rssi_poll)(repeating_timer_t *rt)
 {
     (void)rt;
     rssi_ready = true;
     return true;
 }
-#endif
 
-static void
-start_rssi_poll(repeating_timer_callback_t cb)
+static void start_rssi_poll(repeating_timer_callback_t cb)
 {
     /* Get the initial rssi value. */
     (void)rssi_update(NULL);
@@ -124,15 +107,14 @@ ssd1306_t display;
 bme280_t sensor;
 
 // Sensor values
-volatile float temperature;
-volatile float humidity;
-volatile float pressure;
+volatile float _temperature;
+volatile float _humidity;
+volatile float _pressure;
 
 static critical_section_t sensor_lock;
 
 int main()
 {
-
     struct server *srv;
     struct server_cfg cfg;
     int link_status = CYW43_LINK_DOWN;
@@ -221,6 +203,7 @@ int main()
     cfg.ntp_cfg.server = NTP_SERVER;
 #endif
     cfg.idle_tmo_s = 30;
+    cfg.port = 8091;
 
     /*
      * Before the http server starts, register the custom handlers for
@@ -303,7 +286,6 @@ void init()
 
     // find i2c devices addresses
     uint8_t *found_addrs = get_bme280_addrs(i2c_default);
-
     uint8_t ssd1306_addr = found_addrs[1];
     uint8_t bme280_addr = found_addrs[2];
 
@@ -313,7 +295,7 @@ void init()
     int8_t res = bme280_init(i2c_default,
                              bme280_addr,
                              &sensor,
-                             BME280_FORCED_MODE,
+                             BME280_NORMAL_MODE,
                              BME280_FILTER_OFF,
                              BME280_T_OVERSAMPLE_1,
                              BME280_H_OVERSAMPLE_1,
@@ -330,7 +312,7 @@ void core1_main()
     {
         sleep_ms(1000);
         // Read sensor data
-        int8_t res = bme280_forced_read(&sensor);
+        int8_t res = bme280_normal_read(&sensor);
         if (res != BME280_OK)
         {
             printf("Core1: Temperature reading failed\n");
@@ -341,9 +323,9 @@ void core1_main()
         float p = sensor.pressure / 256.f / 100.f;
 
         critical_section_enter_blocking(&sensor_lock);
-        temperature = t;
-        humidity = h;
-        pressure = p;
+        _temperature = t;
+        _humidity = h;
+        _pressure = p;
         critical_section_exit(&sensor_lock);
 
         char *tStr = new_string("%.2f C", t);
@@ -364,9 +346,14 @@ void core1_main()
     }
 }
 
-uint32_t
-get_temp(void)
+sensor_data_t get_sensor_data(void)
 {
+    sensor_data_t data;
+    critical_section_enter_blocking(&sensor_lock);
+    data.temperature = _temperature;
+    data.humidity = _humidity;
+    data.pressure = _pressure;
+    critical_section_exit(&sensor_lock);
 
-    return temperature;
+    return data;
 }

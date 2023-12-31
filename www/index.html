@@ -4,13 +4,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Server</title>
+  <title>Pico Meteo</title>
   <link rel="shortcut icon" href="/img/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <h1>Oно работает</h1>
+  <section class="row" id="toast" style="display:none">Error:
+    <span id="errorMessageValue"></span>
+  </section>
+  <main class="row">
+    <section class="column">
+      <p class="valueDisplay">
+        Temperature: <span id="temperatureValue">0</span> C
+      </p>
+      <p class="valueDisplay">
+        Humidity: <span id="humidityValue">0</span> %
+      </p>
+      <p class="valueDisplay">
+        Pressure: <span id="pressureValue">0</span> hPa
+      </p>
+    </section>
+  </main>
 
+  <script type="text/javascript" src="main.js"></script>
 </body>
 
 </html>

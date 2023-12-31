@@ -15,12 +15,20 @@
  *
  * See: https://slimhazard.gitlab.io/picow_http/group__assert.html
  */
-struct netinfo {
-	unsigned	magic;
+typedef struct
+{
+	unsigned magic;
 #define NETINFO_MAGIC (0x4f5dde9f)
-	char		ip[IPADDR_STRLEN_MAX];
-	char		mac[MAC_ADDR_LEN];
-};
+	char ip[IPADDR_STRLEN_MAX];
+	char mac[MAC_ADDR_LEN];
+} netinfo_t;
+
+typedef struct sensor_data
+{
+	float temperature;
+	float humidity;
+	float pressure;
+} sensor_data_t;
 
 /*
  * Return the most recent temperature sensor reading in degrees Kelvin as
@@ -30,7 +38,7 @@ struct netinfo {
  * Return UINT32_MAX on error: the ADC error bit was set, or no ADC
  * reading has been stored.
  */
-uint32_t get_temp(void);
+sensor_data_t get_sensor_data(void);
 
 /*
  * Return the most recent rssi value for "our" access point, or INT32_MAX

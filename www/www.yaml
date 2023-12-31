@@ -13,82 +13,77 @@
 # is preceded by "-". Each element must be "static" or "custom".
 
 - server:
-# A "static" element names a file in the www/ directory to be embedded
-# in the application, and configures its properties. The "file" field
-# is required. A number of other fields may be set (see the Wiki link
-# above for details), but here we just use the defaults.
+    # A "static" element names a file in the www/ directory to be embedded
+    # in the application, and configures its properties. The "file" field
+    # is required. A number of other fields may be set (see the Wiki link
+    # above for details), but here we just use the defaults.
 
-# The defaults for index.html are:
-# - Its contents are returned for the URL path "/index.html".
-#   - Also for the paths "/" and "/index.htm".
-# - The Content-Type header is set to "text/html" (due to the .html
-#   extension).
-# - The Cache-Control header is set to "public, max-age=604800"
-#   (cacheable for one week).
-# - The file contents are minified (due to the inferred type text/html).
-# - After minification, the file is compressed with gzip (also due to
-#   text/html).
-#
-# The result after minification and compression is embedded in flash.
-# The response body is only sent with gzip compression, which is
-# accepted by all of the common browsers.
-#
-# The ETag response header is formed from a hash of the file before
-# any minification and/or compression (true of all static resources).
-  - static:
-      file: index.html
+    # The defaults for index.html are:
+    # - Its contents are returned for the URL path "/index.html".
+    #   - Also for the paths "/" and "/index.htm".
+    # - The Content-Type header is set to "text/html" (due to the .html
+    #   extension).
+    # - The Cache-Control header is set to "public, max-age=604800"
+    #   (cacheable for one week).
+    # - The file contents are minified (due to the inferred type text/html).
+    # - After minification, the file is compressed with gzip (also due to
+    #   text/html).
+    #
+    # The result after minification and compression is embedded in flash.
+    # The response body is only sent with gzip compression, which is
+    # accepted by all of the common browsers.
+    #
+    # The ETag response header is formed from a hash of the file before
+    # any minification and/or compression (true of all static resources).
+    - static:
+        file: index.html
 
-# Defaults for img/favicon.png are:
-# - URL path "/img/favicon.png"
-# - Content-Type "image/png", inferred from the .png extension.
-# - Cache-Control "public, max-age=604800" (cacheable for one week).
-# - Contents are neither minified nor compressed (due to "image/png").
-  - static:
-      file: img/favicon.png
+    # Defaults for img/favicon.png are:
+    # - URL path "/img/favicon.png"
+    # - Content-Type "image/png", inferred from the .png extension.
+    # - Cache-Control "public, max-age=604800" (cacheable for one week).
+    # - Contents are neither minified nor compressed (due to "image/png").
+    - static:
+        file: img/favicon.png
 
-# "custom" elements have two required fields "path" and "methods".
-#
-# "path" is the URL path for which the custom handler sends responses.
-# If a request for that path has any query string (or none), it is
-# dispatched to the handler.
-#
-# "methods" is an array of request methods that may be used for the
-# path. If a request specifies the path for a custom handler, but does
-# not use one of the request methods configured here, the server sends
-# an error response with status 405 ("Method Not Allowed").
-#
-# With the configuration declared here, source code can define handler
-# functions that are registered for the paths and methods with
-# register_hndlr() and/or register_hndlr_methods().
-# See:
-# https://slimhazard.gitlab.io/picow_http/group__resp.html#gac4ee42ee6a8559778bb486dcb6253cfe
-# https://slimhazard.gitlab.io/picow_http/group__resp.html#ga9ddd6a8ae2af993335bd07169a383b43
-#
-# A custom handler function must satisfy typedef hndlr_f.
-# See: https://slimhazard.gitlab.io/picow_http/group__resp.html#ga23afab92dd579b34f1190006b6fa1132
+    # Defaults for styles.css are:
+    # - URL path "/styles.css"
+    # - Content-Type "text/css", inferred from the .css extension.
+    # - Cache-Control "public, max-age=604800" (cacheable for one week).
+    # - Contents are minified and gzip compressed (due to the type "text/css").
+    - static:
+        file: style.css
 
-# Handler for GET/HEAD /sensor
-# Return the most recent temperature sensor reading.
-  - custom:
-      path: /sensor
-      methods:
-      - GET
-      - HEAD
+    # Defaults for main.js are:
+    # - URL path "/main.js"
+    # - Content-Type "text/javascript", inferred from the .js extension.
+    # - Cache-Control "public, max-age=604800" (cacheable for one week).
+    # - Contents are minified and gzip compressed (due to "text/javascript").
+    - static:
+        file: main.js
 
-# Handler for GET/HEAD /rssi
-# Return the most recent reading of the rssi (signal strength) of the
-# access point to which the PicoW is connected.
-  - custom:
-      path: /rssi
-      methods:
-      - GET
-      - HEAD
+    # Handler for GET/HEAD /sensor
+    # Return the most recent temperature sensor reading.
+    - custom:
+        path: /sensor
+        methods:
+          - GET
+          - HEAD
 
-# Handler for GET/HEAD /netinfo
-# Return the hostname, IP address and MAC address of the PicoW; and
-# the SSID (network name) of the access point.
-  - custom:
-      path: /netinfo
-      methods:
-      - GET
-      - HEAD
+    # Handler for GET/HEAD /rssi
+    # Return the most recent reading of the rssi (signal strength) of the
+    # access point to which the PicoW is connected.
+    - custom:
+        path: /rssi
+        methods:
+          - GET
+          - HEAD
+
+    # Handler for GET/HEAD /netinfo
+    # Return the hostname, IP address and MAC address of the PicoW; and
+    # the SSID (network name) of the access point.
+    - custom:
+        path: /netinfo
+        methods:
+          - GET
+          - HEAD
