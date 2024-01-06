@@ -207,7 +207,7 @@ int main()
 
     /*
      * Before the http server starts, register the custom handlers for
-     * the URL paths /netinfo, /sensor, /rssi and /led. Each of them is
+     * the URL paths /netinfo, /sensor, /rssi. Each of them is
      * registered for the methods GET and HEAD.
      *
      * For /netinfo, we pass in the address of the netinfo object that

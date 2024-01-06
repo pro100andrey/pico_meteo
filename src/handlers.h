@@ -31,12 +31,7 @@ typedef struct sensor_data
 } sensor_data_t;
 
 /*
- * Return the most recent temperature sensor reading in degrees Kelvin as
- * a fixed-point Q18.14 number; i.e. 18 integer bits and 14 fractional
- * bits.
- *
- * Return UINT32_MAX on error: the ADC error bit was set, or no ADC
- * reading has been stored.
+ * Return sensor_data_t data structure with the most recent sensor readings
  */
 sensor_data_t get_sensor_data(void);
 

@@ -74,15 +74,6 @@ static const char *bool_str[] = {"false", "true"};
 
 /*
  * Custom handler for GET/HEAD /rssi
- *
- * The handler sends a JSON response with the rssi value in the field
- * "rssi", and the boolean field "valid", which is true iff the value is
- * valid.
- *
- * Client-side logic (Javascript) computes a signal strength value in
- * percent.
- *
- * The private data pointer p is not used.
  */
 err_t rssi_handler(struct http *http, void *p)
 {

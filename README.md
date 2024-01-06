@@ -1,8 +1,12 @@
-# pico_temperature
+# pico-meteo
 
 ## Description
+This is a project to create a weather station using a Raspberry Pi Pico.
 
-This is http server for temperature sensor.
+## Modules
+
+- ssd1306: OLED display
+- bme280: Temperature, humidity and pressure sensor
 
 ## Submodules
 ```bash
