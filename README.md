@@ -10,7 +10,7 @@ This is a project to create a weather station using a Raspberry Pi Pico.
 
 ## Submodules
 ```bash
-git submodule update --recursive --remote
+git submodule update --recursive --remote --init
 ```
 
 
